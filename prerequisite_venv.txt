@@ -1,0 +1,10 @@
+# Bibliothèques nécessaires pour faire tourner le projet :
+# numpy
+# pandas
+# scikit-learn
+# matplotlib
+# seaborn
+# streamlit
+# bs4 --> from bs4 import BeautifulSoup
+# requests
+# Datetime
