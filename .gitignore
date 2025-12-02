@@ -1,3 +1,9 @@
 venv/
 __pycache__/
 *.pyc
+
+*.tsv
+*.csv
+*.xlsx
+*.xls
+*.gz
