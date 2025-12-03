@@ -9,5 +9,5 @@ print(f"Script location: {Path(__file__).resolve()}")
 print(f"CSV file path: {resolved_path}")
 print(f"CSV file exists: {csv_path.exists()}\n")
 
-films = pd.read_csv("Projets_Data/Projet_2/projet_recommandation_films/films_final.csv")
+films = pd.read_csv(csv_path)
 print(films.head(5))
