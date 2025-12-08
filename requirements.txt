@@ -1,0 +1,12 @@
+numpy 
+pandas 
+pathlib 
+scikit-learn 
+matplotlib 
+seaborn 
+streamlit 
+streamlit-option-menu 
+streamlit-authenticator 
+requests 
+bs4 
+datetime
