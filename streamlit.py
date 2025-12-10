@@ -231,7 +231,7 @@ def page3():
     st.write("Un autre petit test pour du multipage app")
     st.image("https://i.pinimg.com/564x/56/b9/a9/56b9a962f481a4212bce3f82b151433d.jpg", width=600)
 
-pages = [
+pages = [ # On dirait que la taille des box est fixe, et en fonction du zoom du navigateur ça peut couper le texte
         st.Page(page1, icon="📽️", title="Recherche A&E"),
         st.Page(page2, icon="🎭", title="Le ciné en délire"),
         st.Page(page3, icon="🤡", title="A&E tracker by WCS"),
@@ -241,9 +241,9 @@ st.set_page_config(layout="wide")
 current_page = st.navigation(pages=pages, position="hidden")
 
     # Setup du menu
-num_cols_menu = max(len(pages) + 1, 8)
+num_cols_menu = max(len(pages) + 1, 8) # Au moins 8 colonnes pour que le menu soit espacé, ca permettra aussi d'ajouter des boutons plus tard si besoin
 columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
 columns_menu[0].write("**Menu**")
-for col, page in zip(columns_menu[1:-1], pages):
-    col.page_link(page, icon=page.icon)
+for col, page in zip(columns_menu[1:-1], pages): # On évite la première et la dernière colonne pour le titre "Menu" et le bouton logout
+    col.page_link(page, icon=page.icon) # On crée un lien pour chaque page dans une colonne avec son icône
 current_page.run()
