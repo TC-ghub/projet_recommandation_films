@@ -517,5 +517,3 @@ with footer_col5:
     else:
         st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>WCS</p>", unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
-
-
