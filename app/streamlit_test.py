@@ -479,10 +479,11 @@ current_page = st.navigation(pages=pages, position="hidden")
 
     # Setup du menu
 def menu ():
+    Menu_font = """<div class='Menu_test'><span>Menu</span></div>"""
     with st.container(height=90):
         num_cols_menu = max(len(pages) + 1, 5)
         columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
-        columns_menu[0].markdown("**MENU**", width="stretch", text_alignment="center")
+        columns_menu[0].html(Menu_font)
         for col, page in zip(columns_menu[1:-1], pages):
             col.page_link(page, icon=page.icon, width="stretch")
             
@@ -490,13 +491,15 @@ def menu ():
 menu()
 current_page.run()
 # footer fixe en bas de page
+
+
 st.markdown('<div class="app-footer">', unsafe_allow_html=True)
 
 footer_col1, footer_col2, footer_col3, footer_col4, footer_col5 = st.columns([1, 1, 3, 1, 1])
 
 with footer_col1:
     if logo_cine_en_delire.exists():
-        st.image(logo_cine_en_delire, width=200)
+        st.image(logo_cine_en_delire, width=220)
     else:
         st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>WCS</p>", unsafe_allow_html=True)
 
@@ -510,8 +513,9 @@ with footer_col4:
     st.write("")
 with footer_col5:
     if logo_WCS.exists():
-        st.image(logo_WCS, width=200)
+        st.image(logo_WCS, width=220)
     else:
         st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>WCS</p>", unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
+
 

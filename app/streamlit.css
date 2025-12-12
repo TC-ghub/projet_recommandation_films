@@ -2,13 +2,20 @@ body {
   line-height: 1.2rem;
 }
 
-/* Main boxed container for the page title and filters */
+/* Mot menu du menu */
+.Menu_test{
+  text-align: center;
+  font-size: 2rem;
+  font-weight:bold
+}
+
+/* Container des filtres page principale */
 .main-box{
   border: 1px solid rgba(0,0,0,0.12);
   padding: 1rem 1.25rem;
   border-radius: 8px;
-  background: transparent; /* make background transparent so it's a framed box */
-  box-shadow: none; /* remove shadow to avoid white bar effect */
+  background: transparent;
+  box-shadow: none;
   box-sizing: border-box;
   margin-bottom: 1rem;
 }
@@ -37,14 +44,13 @@ body {
   margin-bottom: 1rem;
 }
 
-/* AJOUT : STYLES POUR LES BOUTONS DE NAVIGATION RESPONSIVE
-/* Style de base pour tous les liens de page */
+/* Style pour les boutons du menu*/
 a[data-testid="stPageLink-NavLink"] {
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    min-width: 0 !important;
-    display: block !important;
+    white-space: nowrap ;
+    overflow: hidden ;
+    text-overflow: ellipsis;
+    min-width: 0 ;
+    display: block;
 }
 
 
