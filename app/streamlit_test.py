@@ -496,8 +496,99 @@ def page2():
     st.image(logo_cine_en_delire, width=600)
 
 def page3():
-    st.title("A&E Tracker par la Wild Comedy Show")
-    st.image(logo_WCS, width=600)
+    """Page A&E Tracker avec présentation du projet"""
+    
+    # CSS pour le thème noir
+    st.markdown("""
+        <style>
+        .page3-title {
+            color: #ffffff;
+            text-align: center;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<h1 class='page3-title'>A&E Tracker par la Wild Comedy Show</h1>", unsafe_allow_html=True)
+    st.write("")
+    st.write("")    
+    # Encadré principal - Introduction (NOIR)
+    with st.container(border=True):
+        st.markdown("<h3 style='text-align: center; margin-bottom: 20px;'>Pourquoi ce tracker</h3>", unsafe_allow_html=True)
+        st.markdown("""
+            <p style='text-align: justify; line-height: 1.7; font-size: 16px;'>
+                L'A&E Tracker répond à un besoin identifié par le cinéma d'Art et Essai 
+                "Le Ciné en Délire" : offrir aux spectateurs un outil de recherche et de 
+                recommandation adapté au catalogue spécifique des films d'Art et Essai. 
+                Notre objectif est de faciliter la découverte de films en fonction des 
+                préférences des utilisateurs, tout en valorisant la richesse du cinéma 
+                indépendant et d'auteur.
+            </p>
+        """, unsafe_allow_html=True)
+    
+    st.write("")
+    
+    # Trois colonnes pour le contenu principal
+    col1, col2, col3 = st.columns([1, 1, 1])
+    
+    with col1:
+        with st.container(border=True, height=400):
+                st.markdown("#### Les fonctionnalités du site")
+                st.write("")
+                st.markdown("""
+                    • Trouvez rapidement vos films préférés grâce à nos filtres avancés
+                    
+                    • Naviguez facilement parmi des milliers de films
+                    
+                    • Découvrez des films similaires à chacun de vos coups de cœur
+                    
+                    • Explorez notre catalogue par genre, acteur ou réalisateur
+                                        
+                    • Consultez toutes les infos : synopsis, casting, notes
+                    
+                    • Profitez d'une interface claire et intuitive
+                """)
+    
+    with col2:
+        # Encadré noir pour le logo
+
+        if logo_WCS.exists():
+            st.image(logo_WCS, use_container_width=True)
+        else:
+            st.markdown("<h2 style='text-align: center; color: #ffffff;'>WCS LOGO</h2>", unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    with col3:
+        with st.container(border=True, height=400):
+            st.markdown("#### La WCS en quelques mots")
+            st.write("")
+            st.markdown("""
+                La Wild Comedy Show se positionne comme une société de services data, 
+                capable de transformer des données culturelles en leviers de décision et de découverte, 
+                avec une touche créative fidèle à l'univers du Ciné en Délire.
+                
+                Elle est composée d'une équipe de consultants expert en data: 
+                Solange, Jenny, Thomas et Jérôme.
+            """)
+    
+    st.write("")
+    
+    with st.container(border=True):
+        st.markdown("<h3 style='text-align: center; margin-bottom: 20px;'> Nous contacter </h3>", unsafe_allow_html=True)
+        st.markdown("""
+            <p style='text-align: justify; line-height: 1.7; font-size: 16px;'>
+                Vous êtes une entreprise et vous souhaitez développer des solutions 
+                data sur-mesure pour vos besoins spécifiques ? <br>
+                Contactez nous par email: 
+                contact@wildcomedyshow.fr ou venez nous rendre visite à notre agence:
+                1 rue de la Princesse Licorne 
+                00000 Royaume Arc-en-Ciel                
+            </p>
+        """, unsafe_allow_html=True)
+    
+    st.write("")
+    
+    
 
 pages = [
         st.Page(page1, icon="📽️", title="Recherche A&E", default=True),
