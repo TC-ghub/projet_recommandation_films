@@ -509,12 +509,13 @@ def page3():
     """, unsafe_allow_html=True)
     
     st.markdown("<h1 class='page3-title'>A&E Tracker par la Wild Comedy Show</h1>", unsafe_allow_html=True)
-        
+    st.write("")
+    st.write("")    
     # Encadré principal - Introduction (NOIR)
-    st.markdown("""
-        <div style='border: 2px solid #ffffff; padding: 30px; margin: 40px auto; max-width: 800px; background-color: #000000; border-radius: 5px;'>
-            <h3 style='text-align: center; margin-bottom: 20px; color: #ffffff;'>Pourquoi ce tracker</h3>
-            <p style='text-align: justify; line-height: 1.7; font-size: 15px; color: #ffffff;'>
+    with st.container(border=True):
+        st.markdown("<h3 style='text-align: center; margin-bottom: 20px;'>Pourquoi ce tracker</h3>", unsafe_allow_html=True)
+        st.markdown("""
+            <p style='text-align: justify; line-height: 1.7; font-size: 16px;'>
                 L'A&E Tracker répond à un besoin identifié par le cinéma d'Art et Essai 
                 "Le Ciné en Délire" : offrir aux spectateurs un outil de recherche et de 
                 recommandation adapté au catalogue spécifique des films d'Art et Essai. 
@@ -522,28 +523,30 @@ def page3():
                 préférences des utilisateurs, tout en valorisant la richesse du cinéma 
                 indépendant et d'auteur.
             </p>
-        </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
     
-    st.write("<br>", unsafe_allow_html=True)
+    st.write("")
     
     # Trois colonnes pour le contenu principal
     col1, col2, col3 = st.columns([1, 1, 1])
     
     with col1:
-        st.markdown("""
-            <div style='border: 2px solid #ffffff; padding: 20px; height: 300px; background-color: #000000; border-radius: 5px;'>
-                <h4 style='text-align: center; margin-bottom: 20px; color: #ffffff;'>Les fonctionnalités du site</h4>
-                <p style='text-align: justify; line-height: 1.7; font-size: 15px; color: #ffffff;'>
-                    • Trouvez rapidement vos films préférés grâce à nos filtres avancés<br>
-                    • Découvrez 5 films similaires à chacun de vos coups de cœur<br>
-                    • Explorez notre catalogue par genre, acteur ou réalisateur<br>
-                    • Naviguez facilement parmi des milliers de films<br>
-                    • Consultez toutes les infos : synopsis, casting, notes<br>
+        with st.container(border=True, height=400):
+                st.markdown("#### Les fonctionnalités du site")
+                st.write("")
+                st.markdown("""
+                    • Trouvez rapidement vos films préférés grâce à nos filtres avancés
+                    
+                    • Naviguez facilement parmi des milliers de films
+                    
+                    • Découvrez des films similaires à chacun de vos coups de cœur
+                    
+                    • Explorez notre catalogue par genre, acteur ou réalisateur
+                                        
+                    • Consultez toutes les infos : synopsis, casting, notes
+                    
                     • Profitez d'une interface claire et intuitive
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+                """)
     
     with col2:
         # Encadré noir pour le logo
@@ -556,24 +559,36 @@ def page3():
         st.markdown("</div>", unsafe_allow_html=True)
     
     with col3:
+        with st.container(border=True, height=400):
+            st.markdown("#### La WCS en quelques mots")
+            st.write("")
+            st.markdown("""
+                La Wild Comedy Show se positionne comme une société de services data, 
+                capable de transformer des données culturelles en leviers de décision et de découverte, 
+                avec une touche créative fidèle à l'univers du Ciné en Délire.
+                
+                Elle est composée d'une équipe de consultants expert en data: 
+                Solange, Jenny, Thomas et Jérôme.
+            """)
+    
+    st.write("")
+    
+    with st.container(border=True):
+        st.markdown("<h3 style='text-align: center; margin-bottom: 20px;'> Nous contacter </h3>", unsafe_allow_html=True)
         st.markdown("""
-            <div style='border: 2px solid #ffffff; padding: 20px; height: 300px; background-color: #000000; border-radius: 5px;'>
-                <h4 style='text-align: center; margin-bottom: 15px; color: #ffffff;'>La WCS :</h4>
-                <p style='text-align: justify; line-height: 1.6; font-size: 14px; color: #ffffff;'>
-                    La Wild Comedy Show se positionne comme une société de services data, 
-                    capable de transformer des données culturelles en leviers de décision et de découverte, 
-                    avec une touche créative fidèle à l'univers du Ciné en Délire.
-                    Elle est composé d'une équipe de consultants data (Solange, Jenny, Thomas et Jérôme).                    
-                </p>
-            </div>
+            <p style='text-align: justify; line-height: 1.7; font-size: 16px;'>
+                Vous êtes une entreprise et vous souhaitez développer des solutions 
+                data sur-mesure pour vos besoins spécifiques ? <br>
+                Contactez nous par email: 
+                contact@wildcomedyshow.fr ou venez nous rendre visite à notre agence:
+                1 rue de la Princesse Licorne 
+                00000 Royaume Arc-en-Ciel                
+            </p>
         """, unsafe_allow_html=True)
     
-    st.write("<br><br>", unsafe_allow_html=True)
+    st.write("")
     
-    # Ligne de séparation en pointillés (BLANC)
-    st.markdown("""
-        <div style='border-bottom: 3px dotted #ffffff; margin: 40px 0;'></div>
-    """, unsafe_allow_html=True)
+    
 
 pages = [
         st.Page(page1, icon="📽️", title="Recherche A&E", default=True),
