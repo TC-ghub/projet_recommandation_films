@@ -32,7 +32,13 @@ def load_data():
     data_path = Path(__file__).parent / "films_final_2.csv"
     return pd.read_csv(data_path)
 film_csv = load_data()
-bdd = pd.DataFrame(film_csv)
+
+@st.cache_data
+def transfo_bdd():
+    bdd = pd.DataFrame(film_csv)
+    bdd['année'] = pd.to_datetime(bdd['année'], format='%d-%m-%Y').dt.year
+    return bdd
+bdd = transfo_bdd()
 
 # Conversion des colonnes de listes pour le système de recommandation
 for col in ['genres', 'acteurs', 'directeurs']:
@@ -363,9 +369,9 @@ def page1():
             with st.container(horizontal=True):
                 tri1, tri2, tri3 = st.columns([5, 5, 10])
                 with tri1:
-                    st.selectbox('Trier par :', options=['Alphabétique', 'Année', 'Note', 'Popularité'], key='sort_by')
+                    tri = st.selectbox('Trier par :', options=['Alphabétique', 'Année', 'Note', 'Popularité'], key='sort_by')
                 with tri2:
-                    st.selectbox('Ordre :', options=['Croissant', 'Décroissant'], key='order_by')
+                    order = st.selectbox('Ordre :', options=['Croissant', 'Décroissant'], key='order_by')
             st.write("<br><br>", unsafe_allow_html=True)
             
             # Boutons de filtrage et réinitialisation
@@ -396,19 +402,18 @@ def page1():
                         if st.session_state.get(genre_key):
                             genre_value = genres[i]
                             temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["genres"].astype(str).str.contains(genre_value, case=False, na=False, regex=False)]
-                    if st.session_state['sort_by']:
-                        sort_column_map = {
-                            'Alphabétique': 'titre',
-                            'Année': 'année',
-                            'Note': 'votes',
-                            'Popularité': 'popularité'
-                        }
-                        sort_column = sort_column_map.get(st.session_state['sort_by'])
-
-                        if sort_column:
-                            ascending = True if st.session_state['order_by'] == 'Croissant' else False
-                            temp_bdd_filtre = temp_bdd_filtre.sort_values(by=sort_column, ascending=ascending)
-
+                    if tri == 'Alphabétique':
+                        sort_column = 'titre'
+                    elif tri == 'Année':
+                        sort_column = 'année'
+                    elif tri == 'Note':
+                        sort_column = 'votes'
+                    elif tri == 'Popularité':
+                        sort_column = 'nombre de votes'
+                    temp_bdd_filtre = temp_bdd_filtre.sort_values(by=sort_column, ascending=True)
+                    if order =='Décroissant':
+                        temp_bdd_filtre = temp_bdd_filtre.sort_values(by=sort_column, ascending=False)
+                            
                     # On stocke le DF filtré dans l'état de session
                     st.session_state.filtered_data = temp_bdd_filtre.copy()
                     st.session_state.page_number = 0 # On revient à la première page
