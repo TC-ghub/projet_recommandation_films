@@ -24,9 +24,22 @@ else:
 logo_WCS = Path(__file__).parent / "wcs.jpg"
 logo_cine_en_delire = Path(__file__).parent / "cine_en_delire.png"
 placeholder = Path(__file__).parent / "placeholder_wcs.png"
+banner = Path(__file__).parent / "banniere.png"
 # On intègre  le fichier csv et on définit la liste des genres
-film_csv = pd.read_csv("films_final_2.csv")
-bdd = pd.DataFrame(film_csv)
+
+@st.cache_data
+def load_data():
+    data_path = Path(__file__).parent / "films_final_2.csv"
+    return pd.read_csv(data_path)
+film_csv = load_data()
+
+@st.cache_data
+def transfo_bdd():
+    bdd = pd.DataFrame(film_csv)
+    bdd['année'] = pd.to_datetime(bdd['année'], format='%d-%m-%Y').dt.year
+    bdd = bdd.sort_values(by='titre', ascending=True)
+    return bdd
+bdd = transfo_bdd()
 
 # Conversion des colonnes de listes pour le système de recommandation
 for col in ['genres', 'acteurs', 'directeurs']:
@@ -60,6 +73,7 @@ for directors_str in film_csv['directeurs'].dropna():
 realisateur_list = ['Tout'] + sorted(list(all_unique_directors))
 
 #resizing des affiches de films pour qu'ils aient tous la même taille
+@st.cache_data
 def poster_sizing(poster_link):
     r = requests.get(poster_link)
     poster_resized = Image.open(BytesIO(r.content))
@@ -106,9 +120,9 @@ def create_recommendation_model(df):
         
         # Pondération des features pour donner plus d'importance aux réalisateurs
         # Genres x3, Acteurs x2, Réalisateurs x5
-        genres_weighted = genres_matrix * 1.75
+        genres_weighted = genres_matrix * 2
         actors_weighted = actors_matrix * 1.5
-        directors_weighted = directors_matrix * 2
+        directors_weighted = directors_matrix * 3
         
         # fusionner les matrices pondérées 
         feature_matrix = np.hstack([genres_weighted, actors_weighted, directors_weighted])
@@ -168,8 +182,6 @@ if 'selected_film' not in st.session_state:
 
 
 # FONCTION POUR AFFICHER UN FILM EN DÉTAIL + RECOMMANDATIONS 
-
-
 def display_film_detail(film_data):
     """Affiche les détails d'un film avec ses recommandations"""
     
@@ -281,64 +293,57 @@ def page1():
         display_film_detail(film_data)
         return  
     
-        
-    # initie un filtre nul au premier passage
-    if 'filtered_data' not in st.session_state:
-        st.session_state.filtered_data = bdd.copy()
-    # initie la page à 0 au premier passage
-    if 'page_number' not in st.session_state:
-        st.session_state.page_number = 0
-    # initie le trigger de reset des filtres (base à False)
-    if 'reset_triggered' not in st.session_state:
-        st.session_state.reset_triggered = False
-
+    st.session_state.setdefault('filtered_data', bdd.copy())
+    st.session_state.setdefault('page_number', 0)
+    st.session_state.setdefault('reset_triggered', False)
+    
     # vérifie si le reset des filtres a été déclenché et on réinitialise tout si c'est le cas
-    if st.session_state.reset_triggered:
+    if st.session_state.reset_triggered == True:
         st.session_state.filtered_data = bdd.copy()
         st.session_state.page_number = 0
         st.session_state["filtre_mot_clef"] = ""
-        st.session_state["filtre_note"] = "Tout"
         st.session_state["filtre_acteur"] = "Tout"
-        st.session_state["filtre_popularite"] = "Tout"
         st.session_state["filtre_real"] = "Tout"
-        st.session_state["filtre_annee_checkbox"] = False
-        st.session_state["filtre_annee"] = 2025
+        st.session_state["filtre_periode"] = (1897, 2025)
         for i in range(1, 20):
             genre_key = f"genre_{i}"
             st.session_state[genre_key] = False
+        st.session_state['sort_by'] = 'Alphabétique'
+        st.session_state['order_by'] = 'Croissant'
         st.session_state.reset_triggered = False 
         st.rerun() 
+
+                # CONTENU DE LA PAGE PRINCIPALE
+    # Bannière en haut
+    with st.container(vertical_alignment="center", height="stretch", border=False):
+        st.image(banner, width='stretch')  
 
     # Je créé trois colonnes pour centrer le contenu
     lay_gauche, lay_centre, lay_droit = st.columns([1, 20, 1])
     # titre
     with lay_centre:
-        # box stylisée pour le titre et les filtres
-        st.markdown('<div class="main-box">', unsafe_allow_html=True)
         st.markdown("<h1 class='main-title'>Recherche de films d'Art & Essai</h1>", unsafe_allow_html=True)
-
         # Filtres container (dans la box stylisée)
         with st.container(border=True):
             st.subheader("Filtres")
-
             # colonnes des filtres principaux
-            # A revoir car je verrai bien un order by pour la popularité ou les notes
             but_gauche, but_centre, but_droit = st.columns(3)
             with but_gauche:
                 mot_clef = st.text_input("Mot-clef", key="filtre_mot_clef")
                 st.write("<br>", unsafe_allow_html=True)
-                note = st.selectbox("Note", options=["Tout", ">= 5", ">= 7", ">= 9"], key="filtre_note")
             with but_centre:
                 actor = st.selectbox("Acteur", options=acteur_list, key="filtre_acteur")
                 st.write("<br> ", unsafe_allow_html=True)
-                popularite = st.selectbox("Popularité", options=["Tout", "Basse", "Moyenne", "Haute"], key="filtre_popularite")
             with but_droit:
                 director = st.selectbox("Réalisateur", options=realisateur_list, key="filtre_real")
                 st.write("<br> ", unsafe_allow_html=True)
-                année = st.number_input("Année", min_value=1900, max_value=2025, value=2025, step=1, key="filtre_annee")
-                annee_checkbox = st.checkbox("Filtrer par Année",  key="filtre_annee_checkbox")
-
-            st.write("Genres")
+            # Filtre période avec un slider
+            col1, col2, col3 = st.columns([1, 5, 1])
+            with col2:
+                date_sld = st.slider("**Sélectionnez une période**", 1897, 2025, (1897, 2025), key="filtre_periode")
+                st.write("Période choisie :",date_sld)
+            st.write("<br> ", unsafe_allow_html=True)
+            st.write("**Genres**")
             # Genres comme toggle button dans des petites colonnes
             but_0, but_a, but_b, but_c, but_d, but_e = st.columns([2.5,5,5,5,5,5])
             # On fait une liste des colonnes pour itérer dessus en ommettant la première colonne qui nous sert uniquement pour la pagination (but_0)
@@ -349,7 +354,16 @@ def page1():
                 with colonnes_genres[i % len(colonnes_genres)]:
                     st.checkbox(f"{genre_film}", key=f"genre_{i+1}")
             
+            st.write("<br> ", unsafe_allow_html=True)
+            # Option de tri
+            with st.container(horizontal=True):
+                tri1, tri2, tri3 = st.columns([5, 5, 10])
+                with tri1:
+                    tri = st.selectbox('Trier par :', options=['Alphabétique', 'Année', 'Note', 'Popularité'], key='sort_by')
+                with tri2:
+                    order = st.selectbox('Ordre :', options=['Croissant', 'Décroissant'], key='order_by')
             st.write("<br><br>", unsafe_allow_html=True)
+            
             # Boutons de filtrage et réinitialisation
             filter_col1, fil2, fil3, fil4, fil5, filter_col2 = st.columns(6)
             with filter_col1: # Bouton de filtrage
@@ -367,24 +381,29 @@ def page1():
                         temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["acteurs"].astype(str).str.contains(actor, case=False, na=False, regex=False)]
                     if director != "Tout":
                         temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["directeurs"].astype(str).str.contains(director, case=False, na=False, regex=False)]
-                    if annee_checkbox:
-                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) == année]
-                    if note != "Tout":
-                        seuil_note = int(note.split(">= ")[1]) # on prend juste le nombre après >=
-                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["votes"] >= seuil_note]
-                    if popularite != "Tout": # Popularité est catégorisé en Basse (<5), Moyenne (5-10), Haute (>=10) (on peut changer ces seuils si vous voulez)
-                        if popularite == "Basse":
-                            temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["popularité"] < 5]
-                        elif popularite == "Moyenne":
-                            temp_bdd_filtre = temp_bdd_filtre[(temp_bdd_filtre["popularité"] >= 5) & (temp_bdd_filtre["popularité"] < 10)]
-                        elif popularite == "Haute":
-                            temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["popularité"] >= 10]
+                    if date_sld:
+                        temp_bdd_filtre = temp_bdd_filtre[
+                            (temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) >= date_sld[0]) &
+                            (temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) <= date_sld[1])
+                        ]
                     # Genres
                     for i in range(1, 20):
                         genre_key = f"genre_{i}"
                         if st.session_state.get(genre_key):
                             genre_value = genres[i]
                             temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["genres"].astype(str).str.contains(genre_value, case=False, na=False, regex=False)]
+                    if tri == 'Alphabétique':
+                        sort_column = 'titre'
+                    elif tri == 'Année':
+                        sort_column = 'année'
+                    elif tri == 'Note':
+                        sort_column = 'votes'
+                    elif tri == 'Popularité':
+                        sort_column = 'nombre de votes'
+                    temp_bdd_filtre = temp_bdd_filtre.sort_values(by=sort_column, ascending=True)
+                    if order =='Décroissant':
+                        temp_bdd_filtre = temp_bdd_filtre.sort_values(by=sort_column, ascending=False)
+                            
                     # On stocke le DF filtré dans l'état de session
                     st.session_state.filtered_data = temp_bdd_filtre.copy()
                     st.session_state.page_number = 0 # On revient à la première page
@@ -403,8 +422,9 @@ def page1():
         total_pages = total_films // films_par_page
         if total_films % films_par_page != 0:
             total_pages += 1 # On ajoute une page supplémentaire pour les restants
-        # Boutons de navigation (prcédente sur col1/suivante sur col3) --> Je l'ai déplacé ici car casse sinon
-        def boutons_navigation(key_numb): # Attention il faudra à chaque fois rentrer un nouveau numéro pour recréer les boutons afin d'avoir un key id différent
+        # Boutons de navigation (prcédente sur col1/suivante sur col3) --> Je l'ai déplacé ici car casse l'UX sinon
+        
+        def boutons_navigation(key_numb): # Attention il faudra à chaque fois rentrer un nouveau numéro pour recréer les boutons
             if total_films > 0 :
                 col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11 = st.columns([4,1,3,1,1,1,1,1,3,1,4])
                 with col2: # On va à la première page
@@ -425,7 +445,7 @@ def page1():
                         if st.button(f"{st.session_state.page_number}", key=f"oneback_{key_numb}", disabled=(st.session_state.page_number < 1), width='stretch'):
                             st.session_state.page_number -= 1
                             st.rerun()
-                with col6: # Page actuelle (toujours désactivé)
+                with col6: # Page actuelle
                     st.button(f"**{st.session_state.page_number + 1}**", key=f"page_actuelle_{key_numb}", disabled=True, width='stretch') # Page actuelle en gras
                 with col7: # On avance d'une page
                     if st.session_state.page_number + 1 < total_pages:
@@ -445,7 +465,7 @@ def page1():
                     if st.button("**>>**", key=f"forwardend_{key_numb}", disabled=(st.session_state.page_number == -1 or total_pages==1), width='stretch'):
                         st.session_state.page_number = total_pages - 1
                         st.rerun()
-                        
+                
         if total_films == 0: # Si aucun film ne correspond aux critères
             st.write("Aucun film ne correspond à vos critères de recherche.")
         else:
@@ -498,7 +518,7 @@ def page2():
 def page3():
     """Page A&E Tracker avec présentation du projet"""
     
-    # CSS pour le thème noir
+    # CSS pour le thème noir /!\ Semble broken (Thomas) /!\
     st.markdown("""
         <style>
         .page3-title {
@@ -512,10 +532,10 @@ def page3():
     st.write("")
     st.write("")    
     # Encadré principal - Introduction (NOIR)
-    with st.container(border=True):
-        st.markdown("<h3 style='text-align: center; margin-bottom: 20px;'>Pourquoi ce tracker</h3>", unsafe_allow_html=True)
+    with st.container(border=True, horizontal=True, vertical_alignment="center"):
+        st.markdown("<h3 style='text-align: center;'>Pourquoi ce tracker</h3>", unsafe_allow_html=True)
         st.markdown("""
-            <p style='text-align: justify; line-height: 1.7; font-size: 16px;'>
+            <p style='text-align: center; line-height: 1.7; font-size: 16px;'>
                 L'A&E Tracker répond à un besoin identifié par le cinéma d'Art et Essai 
                 "Le Ciné en Délire" : offrir aux spectateurs un outil de recherche et de 
                 recommandation adapté au catalogue spécifique des films d'Art et Essai. 
@@ -523,60 +543,52 @@ def page3():
                 préférences des utilisateurs, tout en valorisant la richesse du cinéma 
                 indépendant et d'auteur.
             </p>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
     
     st.write("")
-    
     # Trois colonnes pour le contenu principal
-    col1, col2, col3 = st.columns([1, 1, 1])
-    
-    with col1:
-        with st.container(border=True, height=400):
-                st.markdown("#### Les fonctionnalités du site")
-                st.write("")
-                st.markdown("""
-                    • Trouvez rapidement vos films préférés grâce à nos filtres avancés
-                    
-                    • Naviguez facilement parmi des milliers de films
-                    
-                    • Découvrez des films similaires à chacun de vos coups de cœur
-                    
-                    • Explorez notre catalogue par genre, acteur ou réalisateur
-                                        
-                    • Consultez toutes les infos : synopsis, casting, notes
-                    
-                    • Profitez d'une interface claire et intuitive
-                """)
-    
-    with col2:
-        # Encadré noir pour le logo
-
-        if logo_WCS.exists():
-            st.image(logo_WCS, use_container_width=True)
-        else:
-            st.markdown("<h2 style='text-align: center; color: #ffffff;'>WCS LOGO</h2>", unsafe_allow_html=True)
+    with st.container(border=True, horizontal=True, height='stretch', vertical_alignment="center"):
+        col1, col2, col3 = st.columns([2, 1.2, 2])
         
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-    with col3:
-        with st.container(border=True, height=400):
-            st.markdown("#### La WCS en quelques mots")
-            st.write("")
-            st.markdown("""
-                La Wild Comedy Show se positionne comme une société de services data, 
-                capable de transformer des données culturelles en leviers de décision et de découverte, 
-                avec une touche créative fidèle à l'univers du Ciné en Délire.
+        with col1:
+            with st.container(border=True, height='stretch', horizontal=True, vertical_alignment="center"):
+                st.markdown("#### Les fonctionnalités du site")
+                st.markdown("""<p style='text-align: justify; line-height: 1.7;font-size: 16px;'><br>
+                    • Trouvez rapidement vos films préférés grâce à nos filtres avancés<br>
+                    • Naviguez facilement parmi des milliers de films<br>
+                    • Découvrez des films similaires à chacun de vos coups de cœur<br>
+                    • Explorez notre catalogue par genre, acteur ou réalisateur<br>
+                    • Consultez toutes les infos : synopsis, casting, notes<br>                    
+                    • Profitez d'une interface claire et intuitive
+                    </p>""", unsafe_allow_html=True)
+        
+        with col2:
+            # Encadré noir pour le logo
+            with st.container(border=False, height='stretch', horizontal=False, vertical_alignment="center"):
+                if logo_WCS.exists():
+                    st.image(logo_WCS, width='content')
+                else:
+                    st.markdown("<h2 style='text-align: center; color: #ffffff;'>WCS LOGO</h2>", unsafe_allow_html=True)
                 
-                Elle est composée d'une équipe de consultants expert en data: 
-                Solange, Jenny, Thomas et Jérôme.
-            """)
+                st.markdown("</div>", unsafe_allow_html=True)
+        
+        with col3:
+            with st.container(border=True, height='stretch', horizontal=True, vertical_alignment="center"):
+                st.markdown("#### La WCS en quelques mots")
+                st.markdown("""<p style='text-align: justify;  line-height: 1.7; font-size: 16px;'><br>
+                    La Wild Comedy Show se positionne comme une société de services data, 
+                    capable de transformer des données culturelles en leviers de décision et de découverte, 
+                    avec une touche créative fidèle à l'univers du Ciné en Délire.<br><br>
+                    Elle est composée d'une équipe de consultants expert en data: 
+                    Solange, Jenny, Thomas et Jérôme.</p>
+                    """, unsafe_allow_html=True)
     
     st.write("")
-    
-    with st.container(border=True):
-        st.markdown("<h3 style='text-align: center; margin-bottom: 20px;'> Nous contacter </h3>", unsafe_allow_html=True)
+        
+    with st.container(border=True, horizontal=True, width='stretch', vertical_alignment="center"):
+        st.markdown("<h3 style='text-align: center;'> Nous contacter </h3>", unsafe_allow_html=True)
         st.markdown("""
-            <p style='text-align: justify; line-height: 1.7; font-size: 16px;'>
+            <p style='text-align: justify; line-height: 1.7; horizontal-align: center;font-size: 16px;'>
                 Vous êtes une entreprise et vous souhaitez développer des solutions 
                 data sur-mesure pour vos besoins spécifiques ? <br>
                 Contactez nous par email: 
@@ -584,11 +596,7 @@ def page3():
                 1 rue de la Princesse Licorne 
                 00000 Royaume Arc-en-Ciel                
             </p>
-        """, unsafe_allow_html=True)
-    
-    st.write("")
-    
-    
+            """, unsafe_allow_html=True)
 
 pages = [
         st.Page(page1, icon="📽️", title="Recherche A&E", default=True),
@@ -600,6 +608,7 @@ st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
 current_page = st.navigation(pages=pages, position="hidden")
 
     # Setup du menu
+@st.cache_data
 def menu ():
     Menu_font = """<div class='Menu_test'><span>Menu</span></div>"""
     with st.container(key="mymenu", height=38):
@@ -612,8 +621,9 @@ def menu ():
 # On lance le menu puis la page
 menu()
 current_page.run()
-# footer fixe en bas de page
 
+# footer fixe en bas de page
+@st.cache_data
 def footer():
     st.write("<br><br><br><br>", unsafe_allow_html=True)  # espace pour le footer
     st.write("---", unsafe_allow_html=True)  # ligne de séparation
