@@ -292,7 +292,7 @@ def page1():
         film_data = bdd[bdd['titre'] == st.session_state.selected_film].iloc[0]
         display_film_detail(film_data)
         return  
-    
+
     st.session_state.setdefault('filtered_data', bdd.copy())
     st.session_state.setdefault('page_number', 0)
     st.session_state.setdefault('reset_triggered', False)
@@ -530,7 +530,7 @@ def page3():
         </style>
     """, unsafe_allow_html=True)
     
-    st.markdown("<h1 class='page3-title'>A&E Tracker par la Wild Comedy Show</h1>", unsafe_allow_html=True)
+    st.markdown("""<h1 class='page3-title'>"Des Essais et de l'art" un catalogue de films d'Art et Essais<br>par la Wild Comedy Show™</h1>""", unsafe_allow_html=True)
     st.write("")
     st.write("")    
     # Encadré principal - Introduction (NOIR)
@@ -549,19 +549,25 @@ def page3():
     
     st.write("")
     # Trois colonnes pour le contenu principal
-    with st.container(border=True, horizontal=True, height='stretch', vertical_alignment="center"):
+    with st.container(height='stretch', vertical_alignment="center"):
         col1, col2, col3 = st.columns([2, 1.2, 2])
         
         with col1:
             with st.container(border=True, height='stretch', horizontal=True, vertical_alignment="center"):
-                st.markdown("#### Les fonctionnalités du site")
-                st.markdown("""<p style='text-align: justify; line-height: 1.7;font-size: 16px;'><br>
+                st.markdown("""<h3 style='text-align: center;'>Les fonctionnalités du site</h3>""", unsafe_allow_html=True)
+                st.markdown("""<p style='text-align: justify; line-height: 1.7;font-size: 16px;'>
                     • Trouvez rapidement vos films préférés grâce à nos filtres avancés<br>
                     • Naviguez facilement parmi des milliers de films<br>
                     • Découvrez des films similaires à chacun de vos coups de cœur<br>
                     • Explorez notre catalogue par genre, acteur ou réalisateur<br>
                     • Consultez toutes les infos : synopsis, casting, notes<br>                    
-                    • Profitez d'une interface claire et intuitive
+                    • Profitez d'une interface claire et intuitive<br>
+                    • Une base de données enrichie avec des informations issues de IMDB, TMDB et AFCAE
+                    <br><br>
+                    <u>Notes :</u> Certains films peuvent ne pas avoir d'affiche disponible ou de résumé en raison de limitations dans les données sources.
+                    Par ailleurs, les recommandations sont basées sur un algorithme KNN utilisant les genres, acteurs et réalisateurs pour suggérer des films similaires.
+                    <br>Les films présentés peuvent parfois ne pas correspondre entièrement aux standards d'Art et Essai en raison de la diversité des données collectées.
+                    <br>Certains des réalisateurs connus du milieu de l'Art et Essai ayant parfois également réalisé des films plus grand public, ceux-ci peuvent apparaître dans les résultats de recherche et recommandations. 
                     </p>""", unsafe_allow_html=True)
         
         with col2:
@@ -576,13 +582,13 @@ def page3():
         
         with col3:
             with st.container(border=True, height='stretch', horizontal=True, vertical_alignment="center"):
-                st.markdown("#### La WCS en quelques mots")
-                st.markdown("""<p style='text-align: justify;  line-height: 1.7; font-size: 16px;'><br>
+                st.markdown("""<h3 style='text-align: center;'>La WCS en quelques mots</h3>""", unsafe_allow_html=True)
+                st.markdown("""<p style='text-align: justify;  line-height: 1.7; font-size: 16px;'>
                     La Wild Comedy Show se positionne comme une société de services data, 
                     capable de transformer des données culturelles en leviers de décision et de découverte, 
                     avec une touche créative fidèle à l'univers du Ciné en Délire.<br><br>
-                    Elle est composée d'une équipe de consultants expert en data: 
-                    Solange, Jenny, Thomas et Jérôme.</p>
+                    Elle est composée d'une équipe de consultants expert en datas et passionnés de cinéma : 
+                    Jenny, Jérôme, Solange et Thomas.</p>
                     """, unsafe_allow_html=True)
     
     st.write("")
