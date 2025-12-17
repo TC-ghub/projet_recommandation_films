@@ -635,15 +635,16 @@ def footer():
             if logo_cine_en_delire.exists():
                 st.image(logo_cine_en_delire, width=220)
             else:
-                st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>WCS</p>", unsafe_allow_html=True)
+                st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>Ciné en délire</p>", unsafe_allow_html=True)
 
         with footer_col3:
             st.markdown("<p style='text-align: center; margin: 0; font-size: 17px; color: #555;'><br><br>Application créée par la  Wild Comedy Show  pour Le ciné en délire. Données issus de IMDB, TMDB et AFCAE.<br><br>L'abus de film d'A&E provoque des poussées d'intelligence et un gonflement des chevilles. A consommer avec modération.<br><br>Pour toute question épineuse, veuillez contacter madame Claire Mercier du Ciné en Délire.</p>", unsafe_allow_html=True)
 
         with footer_col5:
-            if logo_WCS.exists():
-                st.image(logo_WCS, width=220)
-            else:
-                st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>WCS</p>", unsafe_allow_html=True)
+            with st.container(horizontal_alignment="right"):
+                if logo_WCS.exists():
+                    st.image(logo_WCS, width=220)
+                else:
+                    st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>WCS</p>", unsafe_allow_html=True)
 
 footer()
