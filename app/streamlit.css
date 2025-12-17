@@ -67,3 +67,10 @@ a[data-testid="stPageLink-NavLink"] {
     min-width: 0 ;
     display: inline-block;
 }
+
+/* Code css pour le layout des pages : nous permet de réduire les marges autour des pages */
+.st-emotion-cache-zy6yx3 {
+    padding-bottom: 0.5rem;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}

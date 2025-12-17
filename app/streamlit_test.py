@@ -337,6 +337,7 @@ def page1():
             with but_droit:
                 director = st.selectbox("Réalisateur", options=realisateur_list, key="filtre_real")
                 st.write("<br> ", unsafe_allow_html=True)
+            
             # Filtre période avec un slider
             col1, col2, col3 = st.columns([1, 5, 1])
             with col2:
@@ -344,6 +345,7 @@ def page1():
                 st.write("Période choisie :",date_sld)
             st.write("<br> ", unsafe_allow_html=True)
             st.write("**Genres**")
+            
             # Genres comme toggle button dans des petites colonnes
             but_0, but_a, but_b, but_c, but_d, but_e = st.columns([2.5,5,5,5,5,5])
             # On fait une liste des colonnes pour itérer dessus en ommettant la première colonne qui nous sert uniquement pour la pagination (but_0)
@@ -353,8 +355,8 @@ def page1():
                 # On répartit les genres dans les 5 colonnes de gauche à droite plutôt que de haut en bas
                 with colonnes_genres[i % len(colonnes_genres)]:
                     st.checkbox(f"{genre_film}", key=f"genre_{i+1}")
-            
             st.write("<br> ", unsafe_allow_html=True)
+            
             # Option de tri
             with st.container(horizontal=True):
                 tri1, tri2, tri3 = st.columns([5, 5, 10])
@@ -365,7 +367,7 @@ def page1():
             st.write("<br><br>", unsafe_allow_html=True)
             
             # Boutons de filtrage et réinitialisation
-            filter_col1, fil2, fil3, fil4, fil5, filter_col2 = st.columns(6)
+            filter_col1, filer, filter_col2 = st.columns([1,4,1])
             with filter_col1: # Bouton de filtrage
                 if st.button("Filtrer", width='stretch'):
                     # On créé un DF temporaire pour appliquer les filtres
