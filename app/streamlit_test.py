@@ -37,6 +37,7 @@ film_csv = load_data()
 def transfo_bdd():
     bdd = pd.DataFrame(film_csv)
     bdd['année'] = pd.to_datetime(bdd['année'], format='%d-%m-%Y').dt.year
+    bdd = bdd.sort_values(by='titre', ascending=True)
     return bdd
 bdd = transfo_bdd()
 
@@ -119,9 +120,9 @@ def create_recommendation_model(df):
         
         # Pondération des features pour donner plus d'importance aux réalisateurs
         # Genres x3, Acteurs x2, Réalisateurs x5
-        genres_weighted = genres_matrix * 1.75
+        genres_weighted = genres_matrix * 2
         actors_weighted = actors_matrix * 1.5
-        directors_weighted = directors_matrix * 2
+        directors_weighted = directors_matrix * 3
         
         # fusionner les matrices pondérées 
         feature_matrix = np.hstack([genres_weighted, actors_weighted, directors_weighted])
@@ -292,30 +293,18 @@ def page1():
         display_film_detail(film_data)
         return  
     
-        
-    # initie un filtre nul au premier passage
-    if 'filtered_data' not in st.session_state:
-        st.session_state.filtered_data = bdd.copy()
-    # initie la page à 0 au premier passage
-    if 'page_number' not in st.session_state:
-        st.session_state.page_number = 0
-    # initie le trigger de reset des filtres (base à False)
-    if 'reset_triggered' not in st.session_state:
-        st.session_state.reset_triggered = False
-
-    if 'sort_by' not in st.session_state:
-        st.session_state['sort_by'] = 'Alphabétique'
-    if 'order_by' not in st.session_state:
-        st.session_state['order_by'] = 'Croissant'
+    st.session_state.setdefault('filtered_data', bdd.copy())
+    st.session_state.setdefault('page_number', 0)
+    st.session_state.setdefault('reset_triggered', False)
     
     # vérifie si le reset des filtres a été déclenché et on réinitialise tout si c'est le cas
-    if st.session_state.reset_triggered:
+    if st.session_state.reset_triggered == True:
         st.session_state.filtered_data = bdd.copy()
         st.session_state.page_number = 0
         st.session_state["filtre_mot_clef"] = ""
         st.session_state["filtre_acteur"] = "Tout"
         st.session_state["filtre_real"] = "Tout"
-        st.session_state["filtre_periode"] = (1900, 2025)
+        st.session_state["filtre_periode"] = (1897, 2025)
         for i in range(1, 20):
             genre_key = f"genre_{i}"
             st.session_state[genre_key] = False
@@ -351,9 +340,10 @@ def page1():
             # Filtre période avec un slider
             col1, col2, col3 = st.columns([1, 5, 1])
             with col2:
-                date_sld = st.slider("Sélectionnez une période", 1900, 2025, (1900, 2025), key="filtre_periode")
-                st.write("dates",date_sld)
-                st.write("Genres")
+                date_sld = st.slider("**Sélectionnez une période**", 1897, 2025, (1897, 2025), key="filtre_periode")
+                st.write("Période choisie :",date_sld)
+            st.write("<br> ", unsafe_allow_html=True)
+            st.write("**Genres**")
             # Genres comme toggle button dans des petites colonnes
             but_0, but_a, but_b, but_c, but_d, but_e = st.columns([2.5,5,5,5,5,5])
             # On fait une liste des colonnes pour itérer dessus en ommettant la première colonne qui nous sert uniquement pour la pagination (but_0)
