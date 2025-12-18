@@ -3,6 +3,8 @@ import pandas as pd
 from pathlib import Path
 import ast
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import MultiLabelBinarizer
 from PIL import Image
@@ -515,29 +517,206 @@ def page1():
             st.markdown('</div>', unsafe_allow_html=True)
 
 def statistiques():
+    # On fait une liste des graphiques disponibles
+    list_graphs = ["Genres les plus représentés", 
+                    "Répartition des genres",
+                    "Films les plus populaires", 
+                    "Acteurs les plus populaires", 
+                    "Distribution des notes des films", 
+                    "Distribution des notes par genre",
+                    "Evolution de la production de films", 
+                    "Relation popularité-notes",
+                    "Matrice de corrélation"
+                    ]
+    # Graph 1
+    def genre_rep():
+        tous_les_genres = pd.concat([bdd['genre_1'], bdd['genre_2'], bdd['genre_3']])
+        tous_les_genres = tous_les_genres.dropna()
+        tous_les_genres = tous_les_genres.astype(str).str.strip()
+        tous_les_genres = tous_les_genres[tous_les_genres.str.len() > 1]
+        compte_genres = tous_les_genres.value_counts().head(10)
+        fig = plt.figure(figsize=(12, 6))
+        sns.barplot(x=compte_genres.values, y=compte_genres.index, palette='viridis')
+        plt.title('Top 10 des Genres')
+        plt.xlabel('Nombre de films')
+        plt.tight_layout() # Pour ne pas couper le texte à gauche
+        return fig
+    
+    # Graph 2
+    def repart_genre():
+        tous_les_genres = bdd[['genre_1', 'genre_2', 'genre_3']].melt(value_name='Genre')
+        tous_les_genres['Genre'] = tous_les_genres['Genre'].astype(str).str.strip()
+        imposteurs = ['nan', 'NaN', '', ' ', 'None', '\\N', '-']
+        tous_les_genres = tous_les_genres[~tous_les_genres['Genre'].isin(imposteurs)]
+        compte_genres = tous_les_genres['Genre'].value_counts()
+        top_10_genres = compte_genres[:10]
+        autres = compte_genres[10:].sum()
+        if autres > 0:
+            top_10_genres['Autres'] = autres
+        fig = plt.figure(figsize=(12, 6))
+        plt.pie(top_10_genres,
+                labels= top_10_genres.index,
+                autopct='%1.1f%%',
+                startangle=140,
+                colors=plt.cm.Pastel1.colors)
+        plt.title('Répartition des Genres', fontsize=16)
+        return fig
+
+    # Graph 3
+    def films_pop():
+        df_plus_votes = bdd.sort_values(by='nombre_de_votes', ascending=False)
+        top_10_films = df_plus_votes.head(10)
+        fig = plt.figure(figsize=(10, 6))
+        sns.barplot(data=top_10_films, x='nombre_de_votes', y='titre', palette='viridis')
+        plt.title('Top 10 des Films les plus populaires (par Votes)')
+        plt.xlabel('Nombre de votes')
+        plt.ylabel('Titre du film')
+        plt.tight_layout()
+        return fig
+
+    # Graph 4
+    def acteurs_pop():
+        df_acteurs = bdd[['acteurs', 'nombre_de_votes']].copy()
+        # s'assurer que le nombre de votes est numérique
+        df_acteurs['nombre_de_votes'] = pd.to_numeric(df_acteurs['nombre_de_votes'], errors='coerce').fillna(0)
+        def _to_list(x):
+            if isinstance(x, list):
+                return x
+            if isinstance(x, str):
+                try:
+                    if x.startswith('['):
+                        parsed = ast.literal_eval(x)
+                        return parsed if isinstance(parsed, list) else [str(parsed)]
+                    # sinon, séparer par virgule
+                    return [a.strip() for a in x.split(',') if a.strip()]
+                except Exception:
+                    return [a.strip() for a in x.split(',') if a.strip()]
+            return []
+        df_acteurs['acteurs'] = df_acteurs['acteurs'].apply(_to_list)
+        df_acteurs_explose = df_acteurs.explode('acteurs')
+        df_acteurs_explose['acteurs'] = df_acteurs_explose['acteurs'].astype(str).str.strip()
+        df_acteurs_explose = df_acteurs_explose[df_acteurs_explose['acteurs'].astype(bool)]
+        top_acteurs = df_acteurs_explose.groupby('acteurs')['nombre_de_votes'].sum().sort_values(ascending=False).head(10)
+        if top_acteurs.empty:
+            fig = plt.figure(figsize=(10, 6))
+            plt.text(0.5, 0.5, 'Aucun acteur valide trouvé', ha='center', va='center')
+            plt.axis('off')
+            return fig
+        fig = plt.figure(figsize=(10, 6))
+        sns.barplot(x=top_acteurs.values, y=top_acteurs.index, palette='rocket')
+        plt.title('Top 10 des Acteurs cumulant le plus de votes (Carrière)')
+        plt.xlabel('Nombre total de votes cumulés')
+        plt.ylabel('Acteur')
+        plt.tight_layout()
+        return fig
+    
+    # Graph 5
+    def distrib_notes():
+        fig = plt.figure(figsize=(10, 6))
+        sns.histplot(data=bdd, x='votes', bins=20, kde=True, color='skyblue')
+        plt.title('Distribution des Notes (Est-ce que les gens sont sévères ?)')
+        plt.xlabel('Note moyenne')
+        plt.ylabel('Nombre de films')
+        return fig
+    
+    # Graph 6
+    def distrib_notes_genre():
+        df_graph = bdd[['votes', 'genre_1', 'genre_2', 'genre_3']]
+        df_melted = df_graph.melt(id_vars=['votes'],
+                                value_vars=['genre_1', 'genre_2', 'genre_3'],
+                                value_name='Genre_Global')
+        df_melted['Genre_Global'] = df_melted['Genre_Global'].astype(str).str.strip()
+        imposteurs = ['nan', 'NaN', '', ' ', 'None', '\\N', '-']
+        df_melted = df_melted[~df_melted['Genre_Global'].isin(imposteurs)]
+        fig = plt.figure(figsize=(16, 8))
+        ordre_alphabetique = sorted(df_melted['Genre_Global'].unique())
+
+        sns.boxplot(x='Genre_Global', y='votes', data=df_melted,
+                    order=ordre_alphabetique,
+                    palette="Set3")
+        plt.title('Distribution des Notes par Genre', fontsize=16)
+        plt.xlabel('Genre', fontsize=12)
+        plt.ylabel('Note (Votes)', fontsize=12)
+        plt.xticks(rotation=45)
+        plt.grid(axis='y', linestyle='--', alpha=0.5)
+        return fig
+    
+    # Graph 7
+    def evo_prod_films():
+        bdd2 = bdd.copy()
+        bdd2['année_clean'] = bdd2['année'].astype(str).str.extract(r'(\d{4})')
+        bdd2['année_clean'] = pd.to_numeric(bdd2['année_clean'], errors='coerce')
+        films_par_annee = bdd2.groupby('année_clean').size()
+        films_par_annee.index = films_par_annee.index.astype(int)
+        films_par_annee = films_par_annee.sort_index()
+        moyenne_mobile = films_par_annee.rolling(window=5).mean()
+        fig = plt.figure(figsize=(12, 6))
+        moyenne_mobile.plot(kind='line', color='red', linewidth=3, label='Tendance Moyenne (sur 5 ans)')
+        plt.title('Évolution de la Production de Films A&E (Chronologique et Lissé)')
+        plt.xlabel('Année')
+        plt.ylabel('Nombre de films sortis')
+        plt.legend()
+        plt.grid(True)
+        return fig
+    
+    # Graph 8
+    def rel_pop_notes():
+        fig = plt.figure(figsize=(12, 6))
+        sns.scatterplot(x='nombre_de_votes',
+                        y='votes',
+                        data=bdd,
+                        alpha=0.6,
+                        color='darkblue')
+        plt.title('Relation entre Popularité et Qualité des films')
+        plt.xlabel('Nombre de votes (Popularité)')
+        plt.ylabel('Note moyenne (Qualité)')
+        plt.xscale('log')
+        plt.grid(True, linestyle='--', alpha=0.3)
+        return fig
+    
+    # Graph 9
+    def matrix():
+        bdd2 = bdd.copy()
+        bdd2['année_num'] = bdd2['année'].astype(str).str.extract(r'(\d{4})')
+        bdd2['année_num'] = pd.to_numeric(bdd2['année_num'], errors='coerce')
+        chiffres = bdd2[['temps', 'votes', 'nombre_de_votes', 'année_num']].dropna()
+        fig = plt.figure(figsize=(10, 8))
+        matrice_corr = chiffres.corr()
+        sns.heatmap(matrice_corr, annot=True, cmap='coolwarm', fmt=".2f")
+        plt.title('Matrice de Corrélation')
+        return fig
+    
+    # Début de la pagination
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
         with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
-            st.title("Statistiques BDD")
-            st.image(logo_cine_en_delire, width=600)
-        st.title("Visualisation de la base de donnée des films d'Art & d'Essai")
-        box = st.selectbox("Quel dataset veux-tu utiliser ?", options=list_dataset)
-        link_dataset = f"https://raw.githubusercontent.com/mwaskom/seaborn-data/refs/heads/master/{box}.csv"
-        data = pd.read_csv(link_dataset) # On charge les datas pandas
+            # Titre H1
+            st.markdown("""<h1 class='page2-title' style='text-align: center;'>Statistiques de la base de données</h1>""", unsafe_allow_html=True)
+            st.subheader("Visualisation de la base de donnée des films d'Art & d'Essai")
+            # Colonnes pour la mise en page
+            col1, col2 = st.columns([1,4])
+            with col1:
+                # Liste déroulante des graphs disponibles
+                box = st.selectbox("Quel graphique veux-tu visionner ?", options=list_graphs)
+            # Affichage des graphs en fonction de l'option choisie
+            if box == "Genres les plus représentés":
+                st.pyplot(genre_rep(), width="content")
+            elif box == "Répartition des genres":
+                st.pyplot(repart_genre(), width=700)
+            elif box == "Films les plus populaires":
+                st.pyplot(films_pop(), width="content")
+            elif box == "Acteurs les plus populaires":
+                st.pyplot(acteurs_pop(), width="content")
+            elif box == "Distribution des notes des films":
+                st.pyplot(distrib_notes(), width="content")
+            elif box == "Distribution des notes par genre":
+                st.pyplot(distrib_notes_genre(), width="content")
+            elif box == "Evolution de la production de films":
+                st.pyplot(evo_prod_films(), width="content")
+            elif box == "Relation popularité-notes":
+                st.pyplot(rel_pop_notes(), width="content")
+            elif box == "Matrice de corrélation":
+                st.pyplot(matrix(), width=900)
 
-        col_x = st.selectbox("Choisissez la colonne X", options=data.columns.tolist())
-        col_y = st.selectbox("Choisissez la colonne Y", options=data.columns.tolist())
-
-        chart = st.selectbox("Quel graphique veux-tu utiliser ?", options=["scatter_chart", "line_chart", "bar_chart"])
-
-        if chart == "scatter_chart":
-            st.subheader(f"Scatter Chart de {col_x} et {col_y}")
-            st.scatter_chart(data[[col_x, col_y]])
-        elif chart == "line_chart":
-            st.subheader(f"Line Chart de {col_x} et {col_y}")
-            st.line_chart(data[[col_x, col_y]])
-        elif chart == "bar_chart":
-            st.subheader(f"Bar Chart de {col_x} et {col_y}")
-            st.bar_chart(data[[col_x, col_y]])
 
 def page2():
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
@@ -580,6 +759,7 @@ def page2():
                         ratione voluptatem sequi nesciunt."</p>""",unsafe_allow_html=True)
                 with st.container(border=False, horizontal_alignment="center"):
                     st.image(cliente, width=600)
+
 
 def page3():
     """Page A&E Tracker avec présentation du projet"""
