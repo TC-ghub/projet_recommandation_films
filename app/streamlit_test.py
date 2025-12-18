@@ -29,13 +29,13 @@ crew = Path(__file__).parent / "la_team.png"
 cliente = Path(__file__).parent / "cliente.png"
 # On intègre  le fichier csv et on définit la liste des genres
 
-@st.cache_data
+
 def load_data():
-    data_path = Path(__file__).parent / "films_final_2.csv"
+    data_path = Path(__file__).parent / "filmsfinal.csv"
     return pd.read_csv(data_path)
 film_csv = load_data()
 
-@st.cache_data
+
 def transfo_bdd():
     bdd = pd.DataFrame(film_csv)
     bdd['année'] = pd.to_datetime(bdd['année'], format='%d-%m-%Y').dt.year
@@ -389,8 +389,8 @@ def page1():
                                 temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["directeurs"].astype(str).str.contains(director, case=False, na=False, regex=False)]
                             if date_sld:
                                 temp_bdd_filtre = temp_bdd_filtre[
-                                    (temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) >= date_sld[0]) &
-                                    (temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) <= date_sld[1])
+                                    (temp_bdd_filtre["année"] >= date_sld[0]) &
+                                    (temp_bdd_filtre["année"] <= date_sld[1])
                                 ]
                             # Genres
                             for i in range(1, 20):
@@ -564,10 +564,10 @@ def statistiques():
 
     # Graph 3
     def films_pop():
-        df_plus_votes = bdd.sort_values(by='nombre_de_votes', ascending=False)
+        df_plus_votes = bdd.sort_values(by='nombre de votes', ascending=False)
         top_10_films = df_plus_votes.head(10)
         fig = plt.figure(figsize=(10, 6))
-        sns.barplot(data=top_10_films, x='nombre_de_votes', y='titre', palette='viridis')
+        sns.barplot(data=top_10_films, x='nombre de votes', y='titre', palette='viridis')
         plt.title('Top 10 des Films les plus populaires (par Votes)')
         plt.xlabel('Nombre de votes')
         plt.ylabel('Titre du film')
@@ -576,9 +576,9 @@ def statistiques():
 
     # Graph 4
     def acteurs_pop():
-        df_acteurs = bdd[['acteurs', 'nombre_de_votes']].copy()
+        df_acteurs = bdd[['acteurs', 'nombre de votes']].copy()
         # s'assurer que le nombre de votes est numérique
-        df_acteurs['nombre_de_votes'] = pd.to_numeric(df_acteurs['nombre_de_votes'], errors='coerce').fillna(0)
+        df_acteurs['nombre de votes'] = pd.to_numeric(df_acteurs['nombre de votes'], errors='coerce').fillna(0)
         def _to_list(x):
             if isinstance(x, list):
                 return x
@@ -596,7 +596,7 @@ def statistiques():
         df_acteurs_explose = df_acteurs.explode('acteurs')
         df_acteurs_explose['acteurs'] = df_acteurs_explose['acteurs'].astype(str).str.strip()
         df_acteurs_explose = df_acteurs_explose[df_acteurs_explose['acteurs'].astype(bool)]
-        top_acteurs = df_acteurs_explose.groupby('acteurs')['nombre_de_votes'].sum().sort_values(ascending=False).head(10)
+        top_acteurs = df_acteurs_explose.groupby('acteurs')['nombre de votes'].sum().sort_values(ascending=False).head(10)
         if top_acteurs.empty:
             fig = plt.figure(figsize=(10, 6))
             plt.text(0.5, 0.5, 'Aucun acteur valide trouvé', ha='center', va='center')
@@ -662,7 +662,7 @@ def statistiques():
     # Graph 8
     def rel_pop_notes():
         fig = plt.figure(figsize=(12, 6))
-        sns.scatterplot(x='nombre_de_votes',
+        sns.scatterplot(x='nombre de votes',
                         y='votes',
                         data=bdd,
                         alpha=0.6,
@@ -679,7 +679,7 @@ def statistiques():
         bdd2 = bdd.copy()
         bdd2['année_num'] = bdd2['année'].astype(str).str.extract(r'(\d{4})')
         bdd2['année_num'] = pd.to_numeric(bdd2['année_num'], errors='coerce')
-        chiffres = bdd2[['temps', 'votes', 'nombre_de_votes', 'année_num']].dropna()
+        chiffres = bdd2[['temps', 'votes', 'nombre de votes', 'année_num']].dropna()
         fig = plt.figure(figsize=(10, 8))
         matrice_corr = chiffres.corr()
         sns.heatmap(matrice_corr, annot=True, cmap='coolwarm', fmt=".2f")
