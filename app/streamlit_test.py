@@ -622,7 +622,7 @@ pages = [
         st.Page(page1, icon="📽️", title="Recherche A&E", default=True),
         st.Page(statistiques, icon="✅", title="Statistiques BDD"),
         st.Page(page2, icon="🎭", title="Le ciné en délire"),
-        st.Page(page3, icon="🤡", title="A&E tracker by WCS"),
+        st.Page(page3, icon="🤡", title="Recherche A&E by WCS"),
     ]
     # Setup de la navigation
 st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
@@ -631,14 +631,14 @@ current_page = st.navigation(pages=pages, position="hidden")
     # Setup du menu
 @st.cache_data
 def menu ():
-    with st.container(key="menu_container"):
-        Menu_font = """<div class='Menu_test'><span>Menu</span></div>"""
-        with st.container(key="mymenu", height=38):
-            num_cols_menu = max(len(pages) + 1, 6)
-            columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
-            columns_menu[0].html(Menu_font)
-            for col, page in zip(columns_menu[1:-1], pages):
-                col.page_link(page, icon=page.icon, width="stretch")
+    st.container(key="menu_container", height=38, border=False)
+    Menu_font = """<div class='Menu_test'><span>Menu</span></div>"""
+    with st.container(key="mymenu", height=38):
+        num_cols_menu = max(len(pages) + 1, 6)
+        columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
+        columns_menu[0].html(Menu_font)
+        for col, page in zip(columns_menu[1:-1], pages):
+            col.page_link(page, icon=page.icon, width="stretch")
 
 # On lance le menu puis la page
 menu()
@@ -647,21 +647,29 @@ current_page.run()
 # footer fixe en bas de page
 @st.cache_data
 def footer():
-    st.write("<br><br><br><br>", unsafe_allow_html=True)  # espace pour le footer
-    st.write("---", unsafe_allow_html=True)  # ligne de séparation
-    with st.container():
+    st.write("<br><br><br>", unsafe_allow_html=True)  # espace pour le footer
+    with st.container(border=False, vertical_alignment="center", height="content"):
+        st.write("---", unsafe_allow_html=True)  # ligne de séparation
         footer_col1, footer_col2, footer_col3, footer_col4, footer_col5 = st.columns([1, 1, 3, 1, 1])
         with footer_col1:
-            if logo_cine_en_delire.exists():
-                st.image(logo_cine_en_delire, width=220)
-            else:
-                st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>Ciné en délire</p>", unsafe_allow_html=True)
+            with st.container(horizontal_alignment="left", border=False):
+                if logo_cine_en_delire.exists():
+                    st.image(logo_cine_en_delire, width=220)
+                else:
+                    st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>Ciné en délire</p>", unsafe_allow_html=True)
 
         with footer_col3:
-            st.markdown("<p style='text-align: center; margin: 0; font-size: 17px; color: #555;'><br><br>Application créée par la  Wild Comedy Show  pour Le ciné en délire. Données issus de IMDB, TMDB et AFCAE.<br><br>L'abus de film d'A&E provoque des poussées d'intelligence et un gonflement des chevilles. A consommer avec modération.<br><br>Pour toute question épineuse, veuillez contacter madame Claire Mercier du Ciné en Délire.</p>", unsafe_allow_html=True)
+            with st.container(horizontal_alignment="center", vertical_alignment="center", height="stretch", border=False):
+                st.markdown("""<p style='text-align: center; margin: 0; font-size: 17px; color: #555;'>
+                            Application créée par la  Wild Comedy Show  pour Le ciné en délire. 
+                            Données issus de IMDB, TMDB et AFCAE.<br><br>
+                            L'abus de film d'A&E provoque des poussées d'intelligence et un gonflement des chevilles. 
+                            A consommer avec modération.<br><br>
+                            Pour toute question épineuse, veuillez contacter madame Claire Mercier du Ciné en Délire.<br></p>"""
+                            , unsafe_allow_html=True)
 
         with footer_col5:
-            with st.container(horizontal_alignment="right"):
+            with st.container(horizontal_alignment="right", border=False):
                 if logo_WCS.exists():
                     st.image(logo_WCS, width=220)
                 else:
