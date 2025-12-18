@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import streamlit_authenticator as stauth
-import streamlit_option_menu as som
 from pathlib import Path
 import ast
 import numpy as np
@@ -25,7 +23,8 @@ logo_WCS = Path(__file__).parent / "wcs.jpg"
 logo_cine_en_delire = Path(__file__).parent / "cine_en_delire.png"
 placeholder = Path(__file__).parent / "placeholder_wcs.png"
 banner = Path(__file__).parent / "banniere.png"
-crew = la_team = Path(__file__).parent / "la_team.png"
+crew = Path(__file__).parent / "la_team.png"
+cliente = Path(__file__).parent / "cliente.png"
 # On intègre  le fichier csv et on définit la liste des genres
 
 @st.cache_data
@@ -520,16 +519,70 @@ def statistiques():
         with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
             st.title("Statistiques BDD")
             st.image(logo_cine_en_delire, width=600)
+        st.title("Visualisation de la base de donnée des films d'Art & d'Essai")
+        box = st.selectbox("Quel dataset veux-tu utiliser ?", options=list_dataset)
+        link_dataset = f"https://raw.githubusercontent.com/mwaskom/seaborn-data/refs/heads/master/{box}.csv"
+        data = pd.read_csv(link_dataset) # On charge les datas pandas
+
+        col_x = st.selectbox("Choisissez la colonne X", options=data.columns.tolist())
+        col_y = st.selectbox("Choisissez la colonne Y", options=data.columns.tolist())
+
+        chart = st.selectbox("Quel graphique veux-tu utiliser ?", options=["scatter_chart", "line_chart", "bar_chart"])
+
+        if chart == "scatter_chart":
+            st.subheader(f"Scatter Chart de {col_x} et {col_y}")
+            st.scatter_chart(data[[col_x, col_y]])
+        elif chart == "line_chart":
+            st.subheader(f"Line Chart de {col_x} et {col_y}")
+            st.line_chart(data[[col_x, col_y]])
+        elif chart == "bar_chart":
+            st.subheader(f"Bar Chart de {col_x} et {col_y}")
+            st.bar_chart(data[[col_x, col_y]])
 
 def page2():
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
-            st.title("Le Ciné en Délire")
-            st.image(logo_cine_en_delire, width=600)
+        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center", height='content'):
+            st.markdown("""<h1 class='page2-title' style='text-align: center;'>Le Ciné en Délire</h1>""", unsafe_allow_html=True)
+            st.write("")
+            with st.container(border=True):
+                st.markdown("""<p style='text-align:justify; font-size:20px;'>Laïus sur le ciné :
+                        "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
+                        totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
+                        Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui
+                        ratione voluptatem sequi nesciunt."</p>""",unsafe_allow_html=True)
+
+            with st.container(height='stretch', vertical_alignment="center"):
+                col1, col2, col3 = st.columns([2,4,2])
+                with col1:
+                    with st.container(horizontal_alignment="left", vertical_alignment="center", height="stretch"):
+                        st.image(logo_cine_en_delire, width="stretch")
+                with col2:
+                    with st.container(border=True, vertical_alignment="center", height="stretch"):
+                        st.markdown("""<p style='text-align:center; font-size:30px;'>Laïus sur l'A&E :<br><br></p>""", unsafe_allow_html=True)
+                        st.markdown("""<p style='text-align:justify; font-size:20px;'>Laïus sur le ciné :
+                        "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
+                        totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
+                        Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui
+                        ratione voluptatem sequi nesciunt."</p>""",unsafe_allow_html=True)
+                with col3:
+                    with st.container(horizontal_alignment="center", vertical_alignment='center', height="stretch"):
+                        loc_tours = pd.DataFrame({"cine" : ["Ciné en délire"], "lat" : [47.383333], "lon" : [0.683333]})
+                        st.map(data=loc_tours, latitude="lat", longitude="lon", zoom=10)
+                    with st.container(vertical_alignment='center', height="stretch"):
+                        st.write("")
+            with st.container(height='stretch', vertical_alignment="center", horizontal_alignment="center"):
+                with st.container(border=True):
+                    st.markdown("""<p style='text-align:center; font-size:30px;'>Laïus sur Claire :<br><br></p>""", unsafe_allow_html=True)
+                    st.markdown("""<p style='text-align:justify; font-size:20px;'>
+                        "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
+                        totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
+                        Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui
+                        ratione voluptatem sequi nesciunt."</p>""",unsafe_allow_html=True)
+                with st.container(border=False, horizontal_alignment="center"):
+                    st.image(cliente, width=600)
 
 def page3():
     """Page A&E Tracker avec présentation du projet"""
-    
     # CSS pour le thème noir /!\ Semble broken (Thomas) /!\
     st.markdown("""
         <style>
@@ -546,10 +599,10 @@ def page3():
             st.write("")    
             # Encadré principal - Introduction (NOIR)
             with st.container(border=True, horizontal=True, vertical_alignment="center"):
-                st.markdown("<h3 style='text-align: center;'>Pourquoi ce tracker</h3>", unsafe_allow_html=True)
+                st.markdown("<h3 style='text-align: center;'>Pourquoi ce moteur de recherche et recommandations ?</h3>", unsafe_allow_html=True)
                 st.markdown("""
                     <p style='text-align: center; line-height: 1.7; font-size: 16px;'>
-                        L'A&E Tracker répond à un besoin identifié par le cinéma d'Art et Essai 
+                        "Des Essais et de l'Art" répond à un besoin identifié par le cinéma d'Art et Essai 
                         "Le Ciné en Délire" : offrir aux spectateurs un outil de recherche et de 
                         recommandation adapté au catalogue spécifique des films d'Art et Essai. 
                         Notre objectif est de faciliter la découverte de films en fonction des 
@@ -633,7 +686,7 @@ current_page = st.navigation(pages=pages, position="hidden")
 def menu ():
     st.container(key="menu_container", height=38, border=False)
     Menu_font = """<div class='Menu_test'><span>Menu</span></div>"""
-    with st.container(key="mymenu", height=38):
+    with st.container(key="mymenu", height=38, vertical_alignment="center"):
         num_cols_menu = max(len(pages) + 1, 6)
         columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
         columns_menu[0].html(Menu_font)
@@ -660,7 +713,7 @@ def footer():
 
         with footer_col3:
             with st.container(horizontal_alignment="center", vertical_alignment="center", height="stretch", border=False):
-                st.markdown("""<p style='text-align: center; margin: 0; font-size: 17px; color: #555;'>
+                st.markdown("""<p style='text-align: center; font-size: 17px; color: #555;'>
                             Application créée par la  Wild Comedy Show  pour Le ciné en délire. 
                             Données issus de IMDB, TMDB et AFCAE.<br><br>
                             L'abus de film d'A&E provoque des poussées d'intelligence et un gonflement des chevilles. 
