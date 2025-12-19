@@ -185,8 +185,7 @@ if 'selected_film' not in st.session_state:
 
 # FONCTION POUR AFFICHER UN FILM EN DÉTAIL + RECOMMANDATIONS 
 def display_film_detail(film_data):
-    """Affiche les détails d'un film avec ses recommandations"""
-            # Bouton retour
+    st.markdown("""<p style='font-size:30px'><br><br>""", unsafe_allow_html=True)
     
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
         with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
@@ -284,11 +283,14 @@ def display_film_detail(film_data):
                             st.rerun()
             else:
                 st.warning("Aucune recommandation disponible pour ce film.")
+        # Bouton retour
     if st.button("← Retour à la recherche", key="back_to_search"):
         st.session_state.selected_film = None
         st.rerun()
 
+
 def page1():
+    st.markdown("""<p style='font-size:30px'><br><br>""", unsafe_allow_html=True)
     # VÉRIFIER SI UN FILM EST SÉLECTIONNÉ 
     if st.session_state.selected_film is not None:
         film_data = bdd[bdd['titre'] == st.session_state.selected_film].iloc[0]
@@ -667,6 +669,7 @@ def statistiques():
         return fig
     
     # Début de la pagination
+    st.markdown("""<p style='font-size:30px'><br><br>""", unsafe_allow_html=True)
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
         with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             # Titre H1
@@ -701,8 +704,9 @@ def statistiques():
 
 
 def page2():
+    st.markdown("""<p style='font-size:30px'><br><br>""", unsafe_allow_html=True)
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center", height='content'):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center", height='content'):
             st.markdown("""<h1 class='page2-title' style='text-align: center;'>Le Ciné en Délire</h1>""", unsafe_allow_html=True)
             st.write("")
             with st.container(border=True):
@@ -754,6 +758,7 @@ def page3():
         }
         </style>
     """, unsafe_allow_html=True)
+    st.markdown("""<p style='font-size:30px'><br>""", unsafe_allow_html=True)
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
         with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             st.markdown("""<h1 class='page3-title'>"Des Essais et de l'art" un catalogue de films d'Art et Essais<br>par la Wild Comedy Show™</h1>""", unsafe_allow_html=True)
@@ -846,7 +851,7 @@ current_page = st.navigation(pages=pages, position="hidden")
     # Setup du menu
 @st.cache_data
 def menu ():
-    st.container(key="menu_container", height='content', border=False, width='stretch')
+    st.container(key="menu_container", height='content', border=False, width='stretch', horizontal=True)
     Menu_font = """<div class='Menu_test' style='text-align:center;'><span>Menu</span></div>"""
     with st.container(key="mymenu", height='content', vertical_alignment="center"):
         num_cols_menu = max(len(pages) + 1, 6)
