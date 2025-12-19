@@ -189,7 +189,7 @@ def display_film_detail(film_data):
             # Bouton retour
     
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             # Affichage du film
             col1, col2 = st.columns([2, 5])
             
@@ -318,7 +318,7 @@ def page1():
                 # CONTENU DE LA PAGE PRINCIPALE
     # Bannière en haut
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             with st.container(vertical_alignment="center", height="stretch", border=False):
                 st.image(banner, width='stretch')  
 
@@ -668,7 +668,7 @@ def statistiques():
     
     # Début de la pagination
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             # Titre H1
             st.markdown("""<h1 class='page2-title' style='text-align: center;'>Statistiques de la base de données</h1>""", unsafe_allow_html=True)
             st.subheader("Visualisation de la base de donnée des films d'Art & d'Essai")
@@ -678,24 +678,26 @@ def statistiques():
                 # Liste déroulante des graphs disponibles
                 box = st.selectbox("Quel graphique veux-tu visionner ?", options=list_graphs)
             # Affichage des graphs en fonction de l'option choisie
-            if box == "Genres les plus représentés":
-                st.pyplot(genre_rep(), width="content")
-            elif box == "Répartition des genres":
-                st.pyplot(repart_genre(), width=700)
-            elif box == "Films les plus populaires":
-                st.pyplot(films_pop(), width="content")
-            elif box == "Acteurs les plus populaires":
-                st.pyplot(acteurs_pop(), width="content")
-            elif box == "Distribution des notes des films":
-                st.pyplot(distrib_notes(), width="content")
-            elif box == "Distribution des notes par genre":
-                st.pyplot(distrib_notes_genre(), width="content")
-            elif box == "Evolution de la production de films":
-                st.pyplot(evo_prod_films(), width="content")
-            elif box == "Relation popularité-notes":
-                st.pyplot(rel_pop_notes(), width="content")
-            elif box == "Matrice de corrélation":
-                st.pyplot(matrix(), width=900)
+            coll1, coll2, coll3 = st.columns([1,4,1])
+            with coll2:
+                if box == "Genres les plus représentés":
+                    st.pyplot(genre_rep(), width="content")
+                elif box == "Répartition des genres":
+                    st.pyplot(repart_genre(), width=700)
+                elif box == "Films les plus populaires":
+                    st.pyplot(films_pop(), width="content")
+                elif box == "Acteurs les plus populaires":
+                    st.pyplot(acteurs_pop(), width="content")
+                elif box == "Distribution des notes des films":
+                    st.pyplot(distrib_notes(), width="content")
+                elif box == "Distribution des notes par genre":
+                    st.pyplot(distrib_notes_genre(), width="content")
+                elif box == "Evolution de la production de films":
+                    st.pyplot(evo_prod_films(), width="content")
+                elif box == "Relation popularité-notes":
+                    st.pyplot(rel_pop_notes(), width="content")
+                elif box == "Matrice de corrélation":
+                    st.pyplot(matrix(), width=700)
 
 
 def page2():
@@ -753,7 +755,7 @@ def page3():
         </style>
     """, unsafe_allow_html=True)
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             st.markdown("""<h1 class='page3-title'>"Des Essais et de l'art" un catalogue de films d'Art et Essais<br>par la Wild Comedy Show™</h1>""", unsafe_allow_html=True)
             st.write("")
             st.write("")    
