@@ -596,7 +596,6 @@ def statistiques():
         fig = plt.figure(figsize=(10, 6))
         sns.barplot(data=top_10_films, x='nombre de votes', y='titre', palette='viridis')
         plt.title('Top 10 des Films les plus populaires (par Votes)')
-        plt.ticklabel_format(style='scientific')
         plt.xlabel('Nombre de votes')
         plt.ylabel('Titre du film')
         plt.tight_layout()
