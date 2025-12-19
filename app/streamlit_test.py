@@ -185,11 +185,10 @@ if 'selected_film' not in st.session_state:
 
 # FONCTION POUR AFFICHER UN FILM EN DÉTAIL + RECOMMANDATIONS 
 def display_film_detail(film_data):
-    """Affiche les détails d'un film avec ses recommandations"""
-            # Bouton retour
+    st.markdown("""<p style='font-size:30px'><br><br>""", unsafe_allow_html=True)
     
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             # Affichage du film
             col1, col2 = st.columns([2, 5])
             
@@ -284,11 +283,14 @@ def display_film_detail(film_data):
                             st.rerun()
             else:
                 st.warning("Aucune recommandation disponible pour ce film.")
+        # Bouton retour
     if st.button("← Retour à la recherche", key="back_to_search"):
         st.session_state.selected_film = None
         st.rerun()
 
+
 def page1():
+    st.markdown("""<p style='font-size:30px'><br><br>""", unsafe_allow_html=True)
     # VÉRIFIER SI UN FILM EST SÉLECTIONNÉ 
     if st.session_state.selected_film is not None:
         film_data = bdd[bdd['titre'] == st.session_state.selected_film].iloc[0]
@@ -318,7 +320,7 @@ def page1():
                 # CONTENU DE LA PAGE PRINCIPALE
     # Bannière en haut
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             with st.container(vertical_alignment="center", height="stretch", border=False):
                 st.image(banner, width='stretch')  
 
@@ -543,6 +545,7 @@ def statistiques():
         return fig
     
     # Graph 2
+
     def repart_genre():
         tous_les_genres = bdd[['genre_1', 'genre_2', 'genre_3']].melt(value_name='Genre')
         tous_les_genres['Genre'] = tous_les_genres['Genre'].astype(str).str.strip()
@@ -552,14 +555,22 @@ def statistiques():
         top_10_genres = compte_genres[:10]
         autres = compte_genres[10:].sum()
         if autres > 0:
+            top_10_genres = top_10_genres.copy()
             top_10_genres['Autres'] = autres
-        fig = plt.figure(figsize=(12, 6))
+        # Create pie chart with legend to the right to avoid label overlap
+        fig, ax = plt.subplots(figsize=(12, 6))
+        plt.figure(figsize=(10, 10))
         plt.pie(top_10_genres,
-                labels= top_10_genres.index,
+                labels=top_10_genres.index,
                 autopct='%1.1f%%',
                 startangle=140,
-                colors=plt.cm.Pastel1.colors)
-        plt.title('Répartition des Genres', fontsize=16)
+                colors=plt.cm.Set3.colors)
+        ax.legend()
+        ax.set_title('Répartition des Genres', fontsize=16)
+        ax.axis('equal')  # keep as circle
+        plt.subplots_adjust(right=0.75)
+        # ensure percentages are legible
+
         return fig
 
     # Graph 3
@@ -667,8 +678,9 @@ def statistiques():
         return fig
     
     # Début de la pagination
+    st.markdown("""<p style='font-size:30px'><br><br>""", unsafe_allow_html=True)
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             # Titre H1
             st.markdown("""<h1 class='page2-title' style='text-align: center;'>Statistiques de la base de données</h1>""", unsafe_allow_html=True)
             st.subheader("Visualisation de la base de donnée des films d'Art & d'Essai")
@@ -678,29 +690,32 @@ def statistiques():
                 # Liste déroulante des graphs disponibles
                 box = st.selectbox("Quel graphique veux-tu visionner ?", options=list_graphs)
             # Affichage des graphs en fonction de l'option choisie
-            if box == "Genres les plus représentés":
-                st.pyplot(genre_rep(), width="content")
-            elif box == "Répartition des genres":
-                st.pyplot(repart_genre(), width=700)
-            elif box == "Films les plus populaires":
-                st.pyplot(films_pop(), width="content")
-            elif box == "Acteurs les plus populaires":
-                st.pyplot(acteurs_pop(), width="content")
-            elif box == "Distribution des notes des films":
-                st.pyplot(distrib_notes(), width="content")
-            elif box == "Distribution des notes par genre":
-                st.pyplot(distrib_notes_genre(), width="content")
-            elif box == "Evolution de la production de films":
-                st.pyplot(evo_prod_films(), width="content")
-            elif box == "Relation popularité-notes":
-                st.pyplot(rel_pop_notes(), width="content")
-            elif box == "Matrice de corrélation":
-                st.pyplot(matrix(), width=900)
+            coll1, coll2, coll3 = st.columns([1,4,1])
+            with coll2:
+                if box == "Genres les plus représentés":
+                    st.pyplot(genre_rep(), width="content")
+                elif box == "Répartition des genres":
+                    st.pyplot(repart_genre(), width=700)
+                elif box == "Films les plus populaires":
+                    st.pyplot(films_pop(), width="content")
+                elif box == "Acteurs les plus populaires":
+                    st.pyplot(acteurs_pop(), width="content")
+                elif box == "Distribution des notes des films":
+                    st.pyplot(distrib_notes(), width="content")
+                elif box == "Distribution des notes par genre":
+                    st.pyplot(distrib_notes_genre(), width="content")
+                elif box == "Evolution de la production de films":
+                    st.pyplot(evo_prod_films(), width="content")
+                elif box == "Relation popularité-notes":
+                    st.pyplot(rel_pop_notes(), width="content")
+                elif box == "Matrice de corrélation":
+                        st.pyplot(matrix(), width=700)
 
 
 def page2():
+    st.markdown("""<p style='font-size:30px'><br><br>""", unsafe_allow_html=True)
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center", height='content'):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center", height='content'):
             st.markdown("""<h1 class='page2-title' style='text-align: center;'>Le Ciné en Délire</h1>""", unsafe_allow_html=True)
             st.write("")
             with st.container(border=True):
@@ -752,8 +767,9 @@ def page3():
         }
         </style>
     """, unsafe_allow_html=True)
+    st.markdown("""<p style='font-size:30px'><br>""", unsafe_allow_html=True)
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
-        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
+        with st.container(border=False, width=1485, horizontal_alignment="center", vertical_alignment="center"):
             st.markdown("""<h1 class='page3-title'>"Des Essais et de l'art" un catalogue de films d'Art et Essais<br>par la Wild Comedy Show™</h1>""", unsafe_allow_html=True)
             st.write("")
             st.write("")    
@@ -787,7 +803,7 @@ def page3():
                             • Consultez toutes les infos : synopsis, casting, notes<br>                    
                             • Profitez d'une interface claire et intuitive<br>
                             • Une base de données enrichie avec des informations issues de IMDB, TMDB et AFCAE
-                            <br><br><br><br>
+                            <br><br>
                             <u>Notes :</u> Certains films peuvent ne pas avoir d'affiche disponible ou de résumé en raison de limitations dans les données sources.
                             Par ailleurs, les recommandations sont basées sur un algorithme KNN utilisant les genres, acteurs et réalisateurs pour suggérer des films similaires.
                             <br>Les films présentés peuvent parfois ne pas correspondre entièrement aux standards d'Art et Essai en raison de la diversité des données collectées.
@@ -844,9 +860,9 @@ current_page = st.navigation(pages=pages, position="hidden")
     # Setup du menu
 @st.cache_data
 def menu ():
-    st.container(key="menu_container", height=38, border=False)
-    Menu_font = """<div class='Menu_test'><span>Menu</span></div>"""
-    with st.container(key="mymenu", height=38, vertical_alignment="center"):
+    st.container(key="menu_container", height='content', border=False, width='stretch', horizontal=True)
+    Menu_font = """<div class='Menu_test' style='text-align:center;'><span>Menu</span></div>"""
+    with st.container(key="mymenu", height='content', vertical_alignment="center"):
         num_cols_menu = max(len(pages) + 1, 6)
         columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
         columns_menu[0].html(Menu_font)
@@ -861,7 +877,7 @@ current_page.run()
 @st.cache_data
 def footer():
     st.write("<br><br><br>", unsafe_allow_html=True)  # espace pour le footer
-    with st.container(border=False, vertical_alignment="center", height="content"):
+    with st.container(border=False, vertical_alignment="center", height="content", width='stretch'):
         st.write("---", unsafe_allow_html=True)  # ligne de séparation
         footer_col1, footer_col2, footer_col3, footer_col4, footer_col5 = st.columns([1, 1, 3, 1, 1])
         with footer_col1:
