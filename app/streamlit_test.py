@@ -836,6 +836,9 @@ def page3():
                         00000 Royaume Arc-en-Ciel                
                     </p>
                     """, unsafe_allow_html=True)
+            with st.container(horizontal_alignment="center", vertical_alignment='center', height="stretch"):
+                loc_bermuda = pd.DataFrame({"cine" : ["Ciné en délire"], "lat" : [25], "lon" : [-71]})
+                st.map(data=loc_bermuda, latitude="lat", longitude="lon", zoom=3)
 
 pages = [
         st.Page(page1, icon="📽️", title="Recherche A&E", default=True),
