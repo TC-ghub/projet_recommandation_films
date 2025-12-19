@@ -748,7 +748,7 @@ def page2():
                 with col2:
                     with st.container(border=True, vertical_alignment="center", height="stretch"):
                         st.markdown("""<p style='text-align:center; font-size:30px;'>La catégorie Art et Essai :<br><br></p>""", unsafe_allow_html=True)
-                        st.markdown("""<p style='text-align:justify; font-size:20px;'>La catégorie Art et Essai:
+                        st.markdown("""<p style='text-align:justify; font-size:20px;'>
                         C’est un peu le coin VIP du cinéma… sauf que tout le monde est invité, à condition d’aimer les films qui sortent du cadre (parfois très loin du cadre). Ici, on célèbre les œuvres qui préfèrent chuchoter plutôt que hurler, surprendre plutôt qu’exploser, et réfléchir plutôt que courir après un robot géant. On y trouve des réalisateurs qui ont des idées, beaucoup d’idées, parfois trop pour un seul film — mais c’est ce qui fait le charme. Les spectateurs viennent pour être bousculés, émus, intrigués… et repartent souvent en se demandant s’ils ont assisté à un chef‑d’œuvre ou à une énigme artistique. C’est un espace où la créativité règne, où la curiosité est reine, et où même le pop‑corn se sent obligé d’être un peu plus sophistiqué. Ici, le cinéma prend son temps, et vous aussi.</p>""",unsafe_allow_html=True)
                 with col3:
                     with st.container(horizontal_alignment="center", vertical_alignment='center', height="stretch"):
