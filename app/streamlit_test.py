@@ -556,16 +556,19 @@ def statistiques():
         if autres > 0:
             top_10_genres = top_10_genres.copy()
             top_10_genres['Autres'] = autres
+        # Create pie chart and show name + counts + percent in the legend (no in-pie labels)
         fig, ax = plt.subplots(figsize=(12, 6))
-        plt.figure(figsize=(10, 10))
-        plt.pie(top_10_genres,
-                labels=top_10_genres.index,
-                autopct='%1.1f%%',
-                startangle=140,
-                colors=plt.cm.Set3.colors)
-        ax.legend()
+        wedges, texts = ax.pie(top_10_genres,
+                            labels=None,
+                            startangle=140,
+                            colors=plt.cm.Set3.colors,
+                            wedgeprops={'edgecolor': 'white'})
+        total = top_10_genres.sum()
+        legend_labels = [f"{name} — {int(count)} ({count / total * 100:.1f}%)" for name, count in top_10_genres.items()]
+        ax.legend(wedges, legend_labels, title='Genres', loc='center left', bbox_to_anchor=(1, 0.5))
         ax.set_title('Répartition des Genres', fontsize=16)
-        ax.axis('equal')
+        ax.axis('equal')  # keep as circle
+        plt.subplots_adjust(right=0.65)
         return fig
 
     # Graph 3
