@@ -434,7 +434,7 @@ def page1():
                 
                 def boutons_navigation(key_numb): # Attention il faudra à chaque fois rentrer un nouveau numéro pour recréer les boutons
                     if total_films > 0 :
-                        col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11 = st.columns([4,1,3,1,1,1,1,1,3,1,4])
+                        col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11 = st.columns([2,1,2.5,1,1,1,1,1,2.5,1,2])
                         with col2: # On va à la première page
                             if st.button("**<<**", key=f"back0_{key_numb}", disabled=(st.session_state.page_number == 0), width='stretch'):
                                 st.session_state.page_number = 0 # On revient à la première page
