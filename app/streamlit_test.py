@@ -38,6 +38,9 @@ film_csv = load_data()
 
 def transfo_bdd():
     bdd = pd.DataFrame(film_csv)
+    replace_charac = {"À" : "A", "Â" : "A", "Ä" : "A", "Á" : "A", "Ç" : "C", "É" : "E"}
+    for old, new in replace_charac.items():
+        bdd['titre'] = bdd['titre'].str.replace(old, new)
     bdd['année'] = pd.to_datetime(bdd['année'], format='%d-%m-%Y').dt.year
     bdd = bdd.sort_values(by='titre', ascending=True)
     return bdd
