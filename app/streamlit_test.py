@@ -308,7 +308,7 @@ def page1():
         st.session_state["filtre_mot_clef"] = ""
         st.session_state["filtre_acteur"] = "Tout"
         st.session_state["filtre_real"] = "Tout"
-        st.session_state["filtre_periode"] = (1897, 2025)
+        st.session_state["filtre_periode"] = (1914, 2025)
         for i in range(1, 20):
             genre_key = f"genre_{i}"
             st.session_state[genre_key] = False
@@ -347,7 +347,7 @@ def page1():
                     # Filtre période avec un slider
                     col1, col2, col3 = st.columns([1, 5, 1])
                     with col2:
-                        date_sld = st.slider("**Sélectionnez une période**", 1897, 2025, (1897, 2025), key="filtre_periode")
+                        date_sld = st.slider("**Sélectionnez une période**", 1914, 2025, (1914, 2025), key="filtre_periode")
                         st.write("Période choisie :",date_sld)
                     st.write("<br> ", unsafe_allow_html=True)
                     st.write("**Genres**")
